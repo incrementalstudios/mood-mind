@@ -4,14 +4,22 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SCRIPT } from "./data/Script";
+import { getSentiment } from "./utils/utils";
 
 type Message = {
   role: "user" | "assistant";
-  content: string;
+  content: string | ((score?: number) => string);
+  checkSentiment?: boolean;
+  keywords?: object;
+  condition?: (score: number, sequence: number) => number;
 };
 
 export default function VoiceChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([SCRIPT[0]]);
+  const [userResponses, setUserResponses] = useState<any[]>([]);
+  const [resultDepresion, setResultDepresion] = useState<number>(0);
+  const [assistanceSequence, setAssistanceSequence] = useState<number>(0);
   const [inputText, setInputText] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -20,6 +28,9 @@ export default function VoiceChat() {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  console.log("userResponses", userResponses);
+  console.log("resultDepresion", resultDepresion);
 
   useEffect(() => {
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
@@ -72,18 +83,50 @@ export default function VoiceChat() {
   };
 
   const handleSend = async () => {
-    if (inputText.trim() === "") return;
+    const trimmedInputText = inputText.trim();
+    if (!trimmedInputText) return;
 
-    const newMessages = [...messages, { role: "user", content: inputText }];
+    const newMessages = [
+      ...messages,
+      { role: "user", content: trimmedInputText },
+    ];
     setMessages(newMessages);
     setInputText("");
 
-    // Simulate AI response (replace with actual API call in a real application)
-    setTimeout(() => {
-      const aiResponse = `This is a simulated response to: "${inputText}"`;
-      setMessages([...newMessages, { role: "assistant", content: aiResponse }]);
-      speakText(aiResponse);
-    }, 1000);
+    const currentScript = SCRIPT[assistanceSequence];
+    let currentScore = resultDepresion;
+    let nextSequence = assistanceSequence;
+
+    if (currentScript.keywords) {
+      const sentiment = getSentiment(trimmedInputText, currentScript.keywords);
+      const newResponses = [
+        ...userResponses,
+        {
+          content: trimmedInputText,
+          sentiment,
+          questionSeq: assistanceSequence,
+        },
+      ];
+      if (sentiment.score < 0) currentScore++;
+      setUserResponses(newResponses);
+      setResultDepresion(currentScore);
+    }
+
+    if (currentScript.condition) {
+      nextSequence = currentScript.condition(currentScore, nextSequence);
+    } else {
+      nextSequence++;
+    }
+
+    if (SCRIPT.length !== nextSequence) {
+      setAssistanceSequence(nextSequence);
+      setMessages((prevMessages) => [...prevMessages, SCRIPT[nextSequence]]);
+      speakText(
+        typeof SCRIPT[nextSequence].content === "string"
+          ? SCRIPT[nextSequence].content
+          : SCRIPT[nextSequence].content(currentScore)
+      );
+    }
   };
 
   const speakText = (text: string) => {
@@ -91,6 +134,8 @@ export default function VoiceChat() {
       setIsSpeaking(true);
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.onend = () => setIsSpeaking(false);
+      utterance.lang = "id-ID";
+      utterance.rate = 1.2;
       synthRef.current.speak(utterance);
     }
   };
@@ -136,7 +181,11 @@ export default function VoiceChat() {
                     : "bg-white"
                 }`}
               >
-                {message.content}
+                {typeof message.content === "string" ? (
+                  <p>{message.content}</p>
+                ) : (
+                  message.content(resultDepresion)
+                )}
               </div>
             </div>
           </div>
