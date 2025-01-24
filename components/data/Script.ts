@@ -433,7 +433,7 @@ export const SCRIPT: Message[] = [
     role: "assistant" as const,
     content: (score?: number) => {
       const result =
-        score === undefined || score < 0
+        score === undefined || score <= 0
           ? "Tidak Depresi"
           : score >= 5
           ? "Suspek Depresi"
