@@ -237,11 +237,11 @@ export default function VoiceChat() {
             {isSpeaking ? <VolumeX /> : <Volume2 />}
           </Button>
         </div>
-        {error && (
+        {/* {error && (
           <div className="mt-2 text-red-500" role="alert">
             {error}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
