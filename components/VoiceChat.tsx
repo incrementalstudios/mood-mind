@@ -90,6 +90,10 @@ export default function VoiceChat() {
       ...messages,
       { role: "user", content: trimmedInputText },
     ];
+    // Reset Speak
+    recognitionRef.current.stop();
+    setIsListening(!isListening);
+
     setMessages(newMessages);
     setInputText("");
 
@@ -135,7 +139,7 @@ export default function VoiceChat() {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.onend = () => setIsSpeaking(false);
       utterance.lang = "id-ID";
-      utterance.rate = 1.2;
+      // utterance.rate = 1.2;
       synthRef.current.speak(utterance);
     }
   };
