@@ -5,6 +5,7 @@ type Message = {
   keywords?: object;
   condition?: (score: number, sequence: number) => number;
 };
+
 export const keywords = {
   merasa: -1,
   kosong: -2,
