@@ -2,10 +2,19 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react";
+import {
+  Mic,
+  MicOff,
+  Send,
+  Volume2,
+  VolumeX,
+  MessageCircle,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SCRIPT } from "./data/Script";
 import { getSentiment } from "./utils/utils";
+import Image from "next/image";
+import Logo from "../app/img/logo.png";
 
 type Message = {
   role: "user" | "assistant";
@@ -16,7 +25,7 @@ type Message = {
 };
 
 export default function VoiceChat() {
-  const [messages, setMessages] = useState<Message[]>([SCRIPT[0]]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [userResponses, setUserResponses] = useState<any[]>([]);
   const [resultDepresion, setResultDepresion] = useState<number>(0);
   const [assistanceSequence, setAssistanceSequence] = useState<number>(0);
@@ -24,13 +33,17 @@ export default function VoiceChat() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  console.log("userResponses", userResponses);
-  console.log("resultDepresion", resultDepresion);
+  const startConversation = () => {
+    setMessages([SCRIPT[0]]);
+    setIsDialogOpen(false);
+    speakText(SCRIPT[0].content as string);
+  };
 
   useEffect(() => {
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
@@ -153,96 +166,120 @@ export default function VoiceChat() {
 
   return (
     <div className="flex flex-col h-screen max-w-2xl mx-auto bg-gray-100">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex ${
-              message.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`flex items-start space-x-2 ${
-                message.role === "user" ? "flex-row-reverse" : ""
-              }`}
-            >
-              <Avatar>
-                <AvatarFallback>
-                  {message.role === "user" ? "U" : "AI"}
-                </AvatarFallback>
-                <AvatarImage
-                  src={
-                    message.role === "user"
-                      ? "/user-avatar.png"
-                      : "/ai-avatar.png"
-                  }
-                />
-              </Avatar>
-              <div
-                className={`p-3 rounded-lg ${
-                  message.role === "user"
-                    ? "bg-blue-500 text-white"
-                    : "bg-white"
-                }`}
-              >
-                {typeof message.content === "string" ? (
-                  <p>{message.content}</p>
-                ) : (
-                  message.content(resultDepresion)
-                )}
-              </div>
+      {messages.length === 0 && (
+        <div className="flex flex-col items-center justify-center h-full bg-gradient-to-b from-blue-50 to-white animate-fade-in">
+          <div className="text-center space-y-6 p-8 bg-white rounded-2xl shadow-xl border border-blue-100">
+            <div className="flex justify-center">
+              <Image src={Logo} alt="MoodMind Logo" className="w-40 h-40" />
             </div>
+            <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
+              MoodMind
+            </h1>
+            <p className="text-gray-600 max-w-md text-lg leading-relaxed animate-slide-up">
+              Teman pendamping kesehatan mental pribadi Anda. Mari mulai
+              percakapan interaktif untuk mengeksplorasi dan memahami perasaan
+              Anda serta mendapatkan dukungan emosional yang Anda butuhkan.
+            </p>
           </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
-      <div className="p-4 bg-white border-t">
-        <div className="flex items-center space-x-2">
           <Button
-            onClick={toggleListening}
-            className={`${
-              isListening
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-blue-500 hover:bg-blue-600"
-            } text-white`}
+            className="mt-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-7 text-xl font-semibold rounded-xl transform transition-all hover:scale-105 shadow-lg hover:shadow-xl"
+            onClick={startConversation}
           >
-            {isListening ? <MicOff /> : <Mic />}
-          </Button>
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            className="flex-1 p-2 border border-neutral-200 rounded-md dark:border-neutral-800"
-            placeholder="Type or speak your message..."
-          />
-          <Button
-            onClick={handleSend}
-            className="bg-green-500 hover:bg-green-600 text-white"
-          >
-            <Send />
-          </Button>
-          <Button
-            onClick={
-              isSpeaking
-                ? stopSpeaking
-                : () => speakText(messages[messages.length - 1]?.content || "")
-            }
-            className={`${
-              isSpeaking
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-purple-500 hover:bg-purple-600"
-            } text-white`}
-            disabled={messages.length === 0}
-          >
-            {isSpeaking ? <VolumeX /> : <Volume2 />}
+            <MessageCircle className="mr-3 h-16 w-16 animate-pulse" />
+            Mulai Percakapan Interaktif
           </Button>
         </div>
-        {/* {error && (
-          <div className="mt-2 text-red-500" role="alert">
-            {error}
+      )}
+      {messages.length > 0 && (
+        <>
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`flex items-start space-x-2 ${
+                    message.role === "user" ? "flex-row-reverse" : ""
+                  }`}
+                >
+                  <Avatar>
+                    <AvatarFallback>
+                      {message.role === "user" ? "U" : "AI"}
+                    </AvatarFallback>
+                    <AvatarImage
+                      src={
+                        message.role === "user"
+                          ? "/user-avatar.png"
+                          : "/ai-avatar.png"
+                      }
+                    />
+                  </Avatar>
+                  <div
+                    className={`p-3 rounded-lg ${
+                      message.role === "user"
+                        ? "bg-blue-500 text-white"
+                        : "bg-white"
+                    }`}
+                  >
+                    {typeof message.content === "string" ? (
+                      <p>{message.content}</p>
+                    ) : (
+                      message.content(resultDepresion)
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
           </div>
-        )} */}
-      </div>
+          <div className="p-4 bg-white border-t">
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={toggleListening}
+                className={`${
+                  isListening
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-blue-500 hover:bg-blue-600"
+                } text-white`}
+              >
+                {isListening ? <MicOff /> : <Mic />}
+              </Button>
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                className="flex-1 p-2 border border-neutral-200 rounded-md dark:border-neutral-800"
+                placeholder="Type or speak your message..."
+              />
+              <Button
+                onClick={handleSend}
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
+                <Send />
+              </Button>
+              <Button
+                onClick={
+                  isSpeaking
+                    ? stopSpeaking
+                    : () =>
+                        speakText(messages[messages.length - 1]?.content || "")
+                }
+                className={`${
+                  isSpeaking
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-purple-500 hover:bg-purple-600"
+                } text-white`}
+                disabled={messages.length === 0}
+              >
+                {isSpeaking ? <VolumeX /> : <Volume2 />}
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
