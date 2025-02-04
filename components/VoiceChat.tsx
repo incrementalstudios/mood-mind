@@ -33,7 +33,6 @@ export default function VoiceChat() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
@@ -41,7 +40,6 @@ export default function VoiceChat() {
 
   const startConversation = () => {
     setMessages([SCRIPT[0]]);
-    setIsDialogOpen(false);
     speakText(SCRIPT[0].content as string);
   };
 
