@@ -299,6 +299,8 @@ export const keywords = {
   nyeri: -2,
   bunuh: -2,
   marah: -2,
+  sedih: -2,
+  berkurang: -2,
   "merasa kosong": -2,
   "tidak merasakan apa-apa": -2,
   "perasaan hampa": -2,
