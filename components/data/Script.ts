@@ -173,7 +173,7 @@ export const keywords = {
   tengah: 0,
   banyak: 0,
   banget: 0,
-  gak: 0,
+  gak: -2,
   ngerasa: -1,
   bener: 0,
   isi: 0,
