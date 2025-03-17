@@ -360,7 +360,7 @@ const keywordsYesOrNo = {
 export const SCRIPT: Message[] = [
   {
     role: "assistant" as const,
-    content: () => "Dalam 2 minggu terakhir, bagaimana perasaan Anda ?",
+    content: "Dalam 2 minggu terakhir, bagaimana perasaan Anda ?",
     checkSentiment: true,
     keywords: keywords,
   },

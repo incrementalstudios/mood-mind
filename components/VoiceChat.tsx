@@ -15,6 +15,7 @@ import { SCRIPT } from "./data/Script";
 import { getSentiment } from "./utils/utils";
 import Image from "next/image";
 import Logo from "../app/img/logo.png";
+import useSpeech from "@/hooks/useSpeech";
 
 type Message = {
   role: "user" | "assistant";
@@ -37,10 +38,14 @@ export default function VoiceChat() {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { speak, isReady } = useSpeech();
 
   const startConversation = () => {
     setMessages([SCRIPT[0]]);
-    speakText(SCRIPT[0].content as string);
+    if (isReady)
+      speak(SCRIPT[0].content as string)
+    // speakText(SCRIPT[0].content as string);
+
   };
 
   useEffect(() => {
@@ -136,11 +141,15 @@ export default function VoiceChat() {
     if (SCRIPT.length !== nextSequence) {
       setAssistanceSequence(nextSequence);
       setMessages((prevMessages) => [...prevMessages, SCRIPT[nextSequence]]);
-      speakText(
-        typeof SCRIPT[nextSequence].content === "string"
+      if (isReady)
+        speak(typeof SCRIPT[nextSequence].content === "string"
           ? SCRIPT[nextSequence].content
-          : SCRIPT[nextSequence].content(currentScore)
-      );
+          : SCRIPT[nextSequence].content(currentScore))
+      // speakText(
+      //   typeof SCRIPT[nextSequence].content === "string"
+      //     ? SCRIPT[nextSequence].content
+      //     : SCRIPT[nextSequence].content(currentScore)
+      // );
     }
   };
 
@@ -149,8 +158,22 @@ export default function VoiceChat() {
       setIsSpeaking(true);
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.onend = () => setIsSpeaking(false);
-      utterance.lang = "id-ID";
-      // utterance.rate = 1.2;
+
+      // Try to find Indonesian voice
+      const voices = synthRef.current.getVoices();
+      const indonesianVoice = voices.find(voice => voice.lang.includes('id-ID'));
+      console.log(voices);
+
+
+      if (indonesianVoice) {
+        utterance.lang = "id-ID";
+        utterance.voice = indonesianVoice;
+      } else {
+        // Fallback to default voice if Indonesian not available
+        utterance.lang = voices[0].lang;
+        utterance.voice = voices[0];
+      }
+
       synthRef.current.speak(utterance);
     }
   };
@@ -194,14 +217,12 @@ export default function VoiceChat() {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
+                  }`}
               >
                 <div
-                  className={`flex items-start space-x-2 ${
-                    message.role === "user" ? "flex-row-reverse" : ""
-                  }`}
+                  className={`flex items-start space-x-2 ${message.role === "user" ? "flex-row-reverse" : ""
+                    }`}
                 >
                   <Avatar>
                     <AvatarFallback>
@@ -216,11 +237,10 @@ export default function VoiceChat() {
                     />
                   </Avatar>
                   <div
-                    className={`p-3 rounded-lg ${
-                      message.role === "user"
-                        ? "bg-blue-500 text-white"
-                        : "bg-white"
-                    }`}
+                    className={`p-3 rounded-lg ${message.role === "user"
+                      ? "bg-blue-500 text-white"
+                      : "bg-white"
+                      }`}
                   >
                     {typeof message.content === "string" ? (
                       <p>{message.content}</p>
@@ -237,11 +257,10 @@ export default function VoiceChat() {
             <div className="flex items-center space-x-2">
               <Button
                 onClick={toggleListening}
-                className={`${
-                  isListening
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-blue-500 hover:bg-blue-600"
-                } text-white`}
+                className={`${isListening
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-blue-500 hover:bg-blue-600"
+                  } text-white`}
               >
                 {isListening ? <MicOff /> : <Mic />}
               </Button>
@@ -262,14 +281,15 @@ export default function VoiceChat() {
                 onClick={
                   isSpeaking
                     ? stopSpeaking
-                    : () =>
-                        speakText(messages[messages.length - 1]?.content || "")
+                    : () => {
+                      if (isReady)
+                        speak(messages[messages.length - 1]?.content || "")
+                    }
                 }
-                className={`${
-                  isSpeaking
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-purple-500 hover:bg-purple-600"
-                } text-white`}
+                className={`${isSpeaking
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-purple-500 hover:bg-purple-600"
+                  } text-white`}
                 disabled={messages.length === 0}
               >
                 {isSpeaking ? <VolumeX /> : <Volume2 />}
