@@ -42,9 +42,7 @@ export default function VoiceChat() {
 
   const startConversation = () => {
     setMessages([SCRIPT[0]]);
-    if (isReady)
-      speak(SCRIPT[0].content as string)
-    // speakText(SCRIPT[0].content as string);
+    speakText(SCRIPT[0].content as string);
 
   };
 
@@ -141,15 +139,11 @@ export default function VoiceChat() {
     if (SCRIPT.length !== nextSequence) {
       setAssistanceSequence(nextSequence);
       setMessages((prevMessages) => [...prevMessages, SCRIPT[nextSequence]]);
-      if (isReady)
-        speak(typeof SCRIPT[nextSequence].content === "string"
+      speakText(
+        typeof SCRIPT[nextSequence].content === "string"
           ? SCRIPT[nextSequence].content
-          : SCRIPT[nextSequence].content(currentScore))
-      // speakText(
-      //   typeof SCRIPT[nextSequence].content === "string"
-      //     ? SCRIPT[nextSequence].content
-      //     : SCRIPT[nextSequence].content(currentScore)
-      // );
+          : SCRIPT[nextSequence].content(currentScore)
+      );
     }
   };
 
@@ -162,19 +156,16 @@ export default function VoiceChat() {
       // Try to find Indonesian voice
       const voices = synthRef.current.getVoices();
       const indonesianVoice = voices.find(voice => voice.lang.includes('id-ID'));
-      console.log(voices);
-
 
       if (indonesianVoice) {
         utterance.lang = "id-ID";
         utterance.voice = indonesianVoice;
+        synthRef.current.speak(utterance);
       } else {
-        // Fallback to default voice if Indonesian not available
-        utterance.lang = voices[0].lang;
-        utterance.voice = voices[0];
+        if (isReady)
+          speak(text)
       }
 
-      synthRef.current.speak(utterance);
     }
   };
 
@@ -281,10 +272,8 @@ export default function VoiceChat() {
                 onClick={
                   isSpeaking
                     ? stopSpeaking
-                    : () => {
-                      if (isReady)
-                        speak(messages[messages.length - 1]?.content || "")
-                    }
+                    : () => speakText(messages[messages.length - 1]?.content || "")
+
                 }
                 className={`${isSpeaking
                   ? "bg-red-500 hover:bg-red-600"
