@@ -43,7 +43,6 @@ export default function VoiceChat() {
   const startConversation = () => {
     setMessages([SCRIPT[0]]);
     speakText(SCRIPT[0].content as string);
-
   };
 
   useEffect(() => {
@@ -96,27 +95,35 @@ export default function VoiceChat() {
     setIsListening(!isListening);
   };
 
+  /**
+   * Handles the send button click event. It processes the user's input message,
+   * resets the speech recognition, and sends the message to the server.
+   */
   const handleSend = async () => {
     const trimmedInputText = inputText.trim();
     if (!trimmedInputText) return;
 
+    // Display the user's message
     const newMessages = [
       ...messages,
       { role: "user", content: trimmedInputText },
     ];
-    // Reset Speak
-    recognitionRef.current.stop();
-    setIsListening(!isListening);
-
     setMessages(newMessages);
     setInputText("");
 
+    // Stop the speech recognition
+    recognitionRef.current.stop();
+    setIsListening(!isListening);
+
+    // Process the user's message to determine the next sequence of questions
     const currentScript = SCRIPT[assistanceSequence];
     let currentScore = resultDepresion;
     let nextSequence = assistanceSequence;
 
     if (currentScript.keywords) {
+      // Get the sentiment of the user's message
       const sentiment = getSentiment(trimmedInputText, currentScript.keywords);
+      // Store the user's responses and sentiment in the state
       const newResponses = [
         ...userResponses,
         {
@@ -130,15 +137,18 @@ export default function VoiceChat() {
       setResultDepresion(currentScore);
     }
 
+    // Check if the next sequence of questions depends on the sentiment score
     if (currentScript.condition) {
       nextSequence = currentScript.condition(currentScore, nextSequence);
     } else {
       nextSequence++;
     }
 
+    // Check if the next sequence of questions is not the end of the script
     if (SCRIPT.length !== nextSequence) {
       setAssistanceSequence(nextSequence);
       setMessages((prevMessages) => [...prevMessages, SCRIPT[nextSequence]]);
+      // Speak the next question
       speakText(
         typeof SCRIPT[nextSequence].content === "string"
           ? SCRIPT[nextSequence].content
@@ -155,17 +165,17 @@ export default function VoiceChat() {
 
       // Try to find Indonesian voice
       const voices = synthRef.current.getVoices();
-      const indonesianVoice = voices.find(voice => voice.lang.includes('id-ID'));
+      const indonesianVoice = voices.find((voice) =>
+        voice.lang.includes("id-ID")
+      );
 
       if (indonesianVoice) {
         utterance.lang = "id-ID";
         utterance.voice = indonesianVoice;
         synthRef.current.speak(utterance);
       } else {
-        if (isReady)
-          speak(text)
+        if (isReady) speak(text);
       }
-
     }
   };
 
@@ -208,12 +218,14 @@ export default function VoiceChat() {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
-                  }`}
+                className={`flex ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
               >
                 <div
-                  className={`flex items-start space-x-2 ${message.role === "user" ? "flex-row-reverse" : ""
-                    }`}
+                  className={`flex items-start space-x-2 ${
+                    message.role === "user" ? "flex-row-reverse" : ""
+                  }`}
                 >
                   <Avatar>
                     <AvatarFallback>
@@ -228,15 +240,24 @@ export default function VoiceChat() {
                     />
                   </Avatar>
                   <div
-                    className={`p-3 rounded-lg ${message.role === "user"
-                      ? "bg-blue-500 text-white"
-                      : "bg-white"
-                      }`}
+                    className={`p-3 rounded-lg ${
+                      message.role === "user"
+                        ? "bg-blue-500 text-white"
+                        : "bg-white"
+                    }`}
                   >
                     {typeof message.content === "string" ? (
-                      <p>{message.content}</p>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: message.content,
+                        }}
+                      />
                     ) : (
-                      message.content(resultDepresion)
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: message.content(resultDepresion),
+                        }}
+                      />
                     )}
                   </div>
                 </div>
@@ -248,10 +269,11 @@ export default function VoiceChat() {
             <div className="flex items-center space-x-2">
               <Button
                 onClick={toggleListening}
-                className={`${isListening
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-blue-500 hover:bg-blue-600"
-                  } text-white`}
+                className={`${
+                  isListening
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-blue-500 hover:bg-blue-600"
+                } text-white`}
               >
                 {isListening ? <MicOff /> : <Mic />}
               </Button>
@@ -272,13 +294,14 @@ export default function VoiceChat() {
                 onClick={
                   isSpeaking
                     ? stopSpeaking
-                    : () => speakText(messages[messages.length - 1]?.content || "")
-
+                    : () =>
+                        speakText(messages[messages.length - 1]?.content || "")
                 }
-                className={`${isSpeaking
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-purple-500 hover:bg-purple-600"
-                  } text-white`}
+                className={`${
+                  isSpeaking
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-purple-500 hover:bg-purple-600"
+                } text-white`}
                 disabled={messages.length === 0}
               >
                 {isSpeaking ? <VolumeX /> : <Volume2 />}
