@@ -224,7 +224,7 @@ export const keywords = {
   seru: 1,
   nyambung: 1,
   tertarik: 1,
-  kurang: -1,
+  kurang: -2,
   berminat: 1,
   minat: 0,
   gairah: 1,
