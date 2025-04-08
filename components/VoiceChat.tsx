@@ -9,6 +9,8 @@ import {
   Volume2,
   VolumeX,
   MessageCircle,
+  HelpCircle,
+  X,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SCRIPT } from "./data/Script";
@@ -34,6 +36,7 @@ export default function VoiceChat() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
@@ -160,6 +163,7 @@ export default function VoiceChat() {
   const speakText = (text: string) => {
     if (synthRef.current) {
       setIsSpeaking(true);
+      text.replace("/n", "");
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.onend = () => setIsSpeaking(false);
 
@@ -203,17 +207,37 @@ export default function VoiceChat() {
               Anda serta mendapatkan dukungan emosional yang Anda butuhkan.
             </p>
           </div>
-          <Button
-            className="mt-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-7 text-xl font-semibold rounded-xl transform transition-all hover:scale-105 shadow-lg hover:shadow-xl"
-            onClick={startConversation}
-          >
-            <MessageCircle className="mr-3 h-16 w-16 animate-pulse" />
-            Mulai Percakapan Interaktif
-          </Button>
+          <div className="flex flex-col gap-4 mt-10">
+            <Button
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-7 text-xl font-semibold rounded-xl transform transition-all hover:scale-105 shadow-lg hover:shadow-xl"
+              onClick={startConversation}
+            >
+              <MessageCircle className="mr-3 h-16 w-16 animate-pulse" />
+              Mulai Percakapan Interaktif
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-6 py-7 text-xl font-semibold rounded-xl transform transition-all hover:scale-105 shadow-lg hover:shadow-xl"
+              onClick={() => setShowHelpModal(true)}
+            >
+              <HelpCircle className="mr-2 h-8 w-8" />
+              Cara Penggunaan
+            </Button>
+          </div>
         </div>
       )}
       {messages.length > 0 && (
         <>
+          <div className="flex justify-end p-2 bg-white border-b">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-500 hover:text-blue-600"
+              onClick={() => setShowHelpModal(true)}
+            >
+              <HelpCircle className="h-5 w-5 mr-1" />
+              Bantuan
+            </Button>
+          </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((message, index) => (
               <div
@@ -309,6 +333,109 @@ export default function VoiceChat() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-bold text-blue-600">
+                Cara Penggunaan MoodMind
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHelpModal(false)}
+                className="rounded-full h-8 w-8 p-0"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg text-blue-700">
+                  Memulai Percakapan
+                </h3>
+                <p className="text-gray-700">
+                  Klik tombol "Mulai Percakapan Interaktif" untuk memulai sesi
+                  dengan asisten kesehatan mental Anda.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg text-blue-700">
+                  Fitur Suara
+                </h3>
+                <div className="flex items-center space-x-2 mb-2">
+                  <Mic className="text-blue-500" />
+                  <p className="text-gray-700">
+                    Klik untuk mengaktifkan mikrofon dan berbicara.
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 mb-2">
+                  <MicOff className="text-red-500" />
+                  <p className="text-gray-700">
+                    Klik untuk menonaktifkan mikrofon.
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 mb-2">
+                  <Volume2 className="text-purple-500" />
+                  <p className="text-gray-700">
+                    Klik untuk mendengarkan pesan terakhir dari asisten.
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <VolumeX className="text-red-500" />
+                  <p className="text-gray-700">
+                    Klik untuk menghentikan suara.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg text-blue-700">
+                  Mengirim Pesan
+                </h3>
+                <div className="flex items-center space-x-2">
+                  <Send className="text-green-500" />
+                  <p className="text-gray-700">
+                    Klik untuk mengirim pesan Anda ke asisten.
+                  </p>
+                </div>
+                <p className="text-gray-700 mt-2">
+                  Anda dapat mengetik pesan di kotak input atau menggunakan
+                  fitur mikrofon untuk berbicara.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg text-blue-700">
+                  Tips Penggunaan
+                </h3>
+                <ul className="list-disc pl-5 text-gray-700 space-y-1">
+                  <li>
+                    Jawab pertanyaan dengan jujur untuk hasil yang lebih akurat
+                  </li>
+                  <li>Gunakan mikrofon di lingkungan yang tenang</li>
+                  <li>
+                    Anda dapat mengetik jika fitur suara tidak berfungsi dengan
+                    baik
+                  </li>
+                  <li>Percakapan ini bersifat pribadi dan aman</li>
+                </ul>
+              </div>
+            </div>
+            <div className="p-4 border-t bg-gray-50">
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => setShowHelpModal(false)}
+              >
+                Mengerti
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
