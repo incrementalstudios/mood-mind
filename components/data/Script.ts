@@ -9,6 +9,7 @@ type Message = {
 export const keywords = {
   merasa: -1,
   kosong: -2,
+  murung: -2,
   hampa: -2,
   kehampaan: -2,
   tidak: -2,

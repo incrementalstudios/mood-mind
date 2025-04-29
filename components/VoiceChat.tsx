@@ -163,7 +163,7 @@ export default function VoiceChat() {
   const speakText = (text: string) => {
     if (synthRef.current) {
       setIsSpeaking(true);
-      text.replace("/n", "");
+      text.replace("<br>", ".");
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.onend = () => setIsSpeaking(false);
 
@@ -242,14 +242,12 @@ export default function VoiceChat() {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
+                  }`}
               >
                 <div
-                  className={`flex items-start space-x-2 ${
-                    message.role === "user" ? "flex-row-reverse" : ""
-                  }`}
+                  className={`flex items-start space-x-2 ${message.role === "user" ? "flex-row-reverse" : ""
+                    }`}
                 >
                   <Avatar>
                     <AvatarFallback>
@@ -264,11 +262,10 @@ export default function VoiceChat() {
                     />
                   </Avatar>
                   <div
-                    className={`p-3 rounded-lg ${
-                      message.role === "user"
-                        ? "bg-blue-500 text-white"
-                        : "bg-white"
-                    }`}
+                    className={`p-3 rounded-lg ${message.role === "user"
+                      ? "bg-blue-500 text-white"
+                      : "bg-white"
+                      }`}
                   >
                     {typeof message.content === "string" ? (
                       <p
@@ -293,11 +290,10 @@ export default function VoiceChat() {
             <div className="flex items-center space-x-2">
               <Button
                 onClick={toggleListening}
-                className={`${
-                  isListening
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-blue-500 hover:bg-blue-600"
-                } text-white`}
+                className={`${isListening
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-blue-500 hover:bg-blue-600"
+                  } text-white`}
               >
                 {isListening ? <MicOff /> : <Mic />}
               </Button>
@@ -319,13 +315,12 @@ export default function VoiceChat() {
                   isSpeaking
                     ? stopSpeaking
                     : () =>
-                        speakText(messages[messages.length - 1]?.content || "")
+                      speakText(messages[messages.length - 1]?.content || "")
                 }
-                className={`${
-                  isSpeaking
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-purple-500 hover:bg-purple-600"
-                } text-white`}
+                className={`${isSpeaking
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-purple-500 hover:bg-purple-600"
+                  } text-white`}
                 disabled={messages.length === 0}
               >
                 {isSpeaking ? <VolumeX /> : <Volume2 />}
