@@ -303,6 +303,11 @@ export const keywords = {
   buruk: -2,
   sedih: -2,
   berkurang: -2,
+  runtuh: -2,
+  hancur: -2,
+  sepi: -2,
+  meninggal: -2,
+  ditinggal: -2,
   "merasa kosong": -2,
   "tidak merasakan apa-apa": -2,
   "perasaan hampa": -2,
@@ -475,8 +480,8 @@ export const SCRIPT: Message[] = [
         score === undefined || score <= 0
           ? "Tidak Depresi"
           : score >= 5
-          ? "Suspek Depresi"
-          : "Beresiko Depresi";
+            ? "Suspek Depresi"
+            : "Beresiko Depresi";
       return `Hasil Dari Test Anda: ${result} <br> Jangan ragu untuk berbicara dengan dokter atau tenaga kesehatan lainnya jika Anda merasa cemas, sedih, atau mengalami kesulitan emosional. Ingatlah bahwa perasaan cemas atau sedih adalah hal yang wajar dalam menghadapi penyakit seperti TB, tetapi Anda tidak perlu menghadapinya sendirian. Cobalah untuk menghindari pemikiran negatif atau berlebihan. Fokuslah pada hal-hal positif dan lakukan aktivitas yang menyenangkan untuk mengalihkan perhatian dari perasaan cemas. <br> Salam sehat!`;
     },
   },
