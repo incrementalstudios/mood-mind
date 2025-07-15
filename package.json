@@ -14,10 +14,12 @@
     "@vercel/analytics": "^1.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "i18next": "^25.3.2",
     "lucide-react": "^0.473.0",
     "next": "14.2.16",
     "react": "^18",
     "react-dom": "^18",
+    "react-i18next": "^15.6.0",
     "sentiment": "^5.0.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"

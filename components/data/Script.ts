@@ -1,8 +1,11 @@
+import "@/lib/i18n"; // Make sure this import is at the very top
+
 type Message = {
   role: "user" | "assistant";
   content: string | ((score?: number) => string);
   checkSentiment?: boolean;
   keywords?: object;
+  reverse?: boolean;
   condition?: (score: number, sequence: number) => number;
 };
 
@@ -339,138 +342,136 @@ export const keywords = {
 };
 
 const keywordsYesOrNo = {
-  bukan: 1,
-  tiada: 1,
-  tak: 1,
-  enggak: 1,
-  nggak: 1,
-  kagak: 1,
-  engga: 1,
-  ngga: 1,
-  kaga: 1,
-  ga: 1,
-  tidak: 1,
-  tida: 1,
-  iya: -1,
-  ya: -1,
-  baik: -1,
-  benar: -1,
-  betul: -1,
-  sip: -1,
-  oke: -1,
-  setuju: -1,
-  memang: -1,
-  tentu: -1,
-  pastinya: -1,
-  jelas: -1,
-  pasti: -1,
-  sudah: -1,
-  yup: -1,
-  yoi: -1,
-  ho: -1,
-  hooh: -1,
-  iyo: -1,
-  iyah: -1,
-  yah: -1,
-  yep: -1,
-  tentunya: -1,
-  positif: -1,
-  tepat: -1,
-  bener: -1,
-  bisa: -1,
-  boleh: -1,
-  mau: -1,
-  siap: -1,
-  nope: 1,
-  ndak: 1,
-  ndek: 1,
-  ora: 1,
-  mboten: 1,
-  belum: 1,
-  jangan: 1,
-  gak: 1,
+  bukan: -1,
+  tiada: -1,
+  tak: -1,
+  enggak: -1,
+  nggak: -1,
+  kagak: -1,
+  engga: -1,
+  ngga: -1,
+  kaga: -1,
+  ga: -1,
+  tidak: -1,
+  tida: -1,
+  iya: 1,
+  ya: 1,
+  baik: 1,
+  benar: 1,
+  betul: 1,
+  sip: 1,
+  oke: 1,
+  setuju: 1,
+  memang: 1,
+  tentu: 1,
+  pastinya: 1,
+  jelas: 1,
+  pasti: 1,
+  sudah: 1,
+  yup: 1,
+  yoi: 1,
+  ho: 1,
+  hooh: 1,
+  iyo: 1,
+  iyah: 1,
+  yah: 1,
+  yep: 1,
+  tentunya: 1,
+  tepat: 1,
+  bener: 1,
+  bisa: 1,
+  boleh: 1,
+  mau: 1,
+  siap: 1,
+  nope: -1,
+  ndak: -1,
+  ndek: -1,
+  ora: -1,
+  mboten: -1,
+  belum: -1,
+  jangan: -1,
+  gak: -1,
   ogah: 1,
-  males: 1,
-  malas: 1,
-  skip: 1,
-  lewati: 1,
-  nanti: 1,
-  gada: 1,
-  gaada: 1,
+  males: -1,
+  malas: -1,
+  skip: -1,
+  lewati: -1,
+  nanti: -1,
+  gada: -1,
+  gaada: -1,
 };
 
-export const SCRIPT: Message[] = [
+export const createScript = (t: any): Message[] => [
   {
     role: "assistant" as const,
-    content: "Dalam 2 minggu terakhir, bagaimana perasaan Anda ?",
+    content: t("question_1"),
     checkSentiment: true,
     keywords: keywords,
   },
   {
     role: "assistant" as const,
-    content: "Dalam 2 minggu terakhir, bagaimana minat atau semangat Anda?",
+    content: t("question_2"),
     checkSentiment: true,
     keywords: keywords,
     condition: (score: number, sequence: number) => {
       if (score > 0) {
         return sequence + 1;
       } else {
-        return SCRIPT.length - 1;
+        return 10; // Total script length
       }
     },
   },
   {
     role: "assistant" as const,
-    content:
-      "Dalam 2 minggu terakhir, apakah Anda mengalami perubahan berat badan/ nafsu makan? Silakan menjawab Ya atau Tidak",
+    content: t("question_3"),
     keywords: keywordsYesOrNo,
+    reverse: true,
   },
   {
     role: "assistant" as const,
-    content:
-      "Dalam 2 minggu terakhir, apakah Anda mengalami sulit tidur atau tidur berlebihan? Silakan menjawab Ya atau Tidak",
+    content: t("question_4"),
     keywords: keywordsYesOrNo,
+    reverse: true,
   },
   {
     role: "assistant" as const,
-    content:
-      "Dalam 2 minggu terakhir, apakah Anda merasa cemas atau pergerakan Anda lebih lambat? Silakan menjawab Ya atau Tidak",
+    content: t("question_5"),
     keywords: keywordsYesOrNo,
+    reverse: true,
   },
   {
     role: "assistant" as const,
-    content:
-      "Dalam 2 minggu terakhir, apakah Anda merasa lelah atau kehilangan energi? Silakan menjawab Ya atau Tidak",
+    content: t("question_6"),
     keywords: keywordsYesOrNo,
+    reverse: true,
   },
   {
     role: "assistant" as const,
-    content:
-      "Dalam 2 minggu terakhir, apakah Anda merasa tidak berguna atau merasa bersalah? Silakan menjawab Ya atau Tidak",
+    content: t("question_7"),
     keywords: keywordsYesOrNo,
+    reverse: true,
   },
   {
     role: "assistant" as const,
-    content:
-      "Dalam 2 minggu terakhir, apakah Anda berpikir ulang tentang kematian atau menyakiti diri sendiri? Silakan menjawab Ya atau Tidak",
+    content: t("question_8"),
     keywords: keywordsYesOrNo,
+    reverse: true,
     condition: (score: number, sequence: number) => {
       if (score >= 5) {
         return sequence + 1;
       } else {
-        return SCRIPT.length - 1;
+        return 10; // Total script length
       }
     },
   },
   {
     role: "assistant" as const,
-    content: "Apakah kondisi yang Anda rasakan masih bisa diatasi?",
+    content: t("question_9"),
     keywords: keywords,
   },
   {
     role: "assistant" as const,
-    content:
-      "Apakah kondisi yang Anda rasakan mengganggu kehidupan sosial atau pekerjaan Anda?",
+    content: t("question_10"),
     keywords: keywords,
   },
   {
@@ -478,11 +479,13 @@ export const SCRIPT: Message[] = [
     content: (score?: number) => {
       const result =
         score === undefined || score <= 0
-          ? "Tidak Depresi"
+          ? t("risk_not_depression")
           : score >= 5
-            ? "Suspek Depresi"
-            : "Beresiko Depresi";
-      return `Hasil Dari Test Anda: ${result} <br> Jangan ragu untuk berbicara dengan dokter atau tenaga kesehatan lainnya jika Anda merasa cemas, sedih, atau mengalami kesulitan emosional. Ingatlah bahwa perasaan cemas atau sedih adalah hal yang wajar dalam menghadapi penyakit seperti TB, tetapi Anda tidak perlu menghadapinya sendirian. Cobalah untuk menghindari pemikiran negatif atau berlebihan. Fokuslah pada hal-hal positif dan lakukan aktivitas yang menyenangkan untuk mengalihkan perhatian dari perasaan cemas. <br> Salam sehat!`;
+          ? t("risk_suspect_depression")
+          : t("risk_depression");
+      return `${t("result_depression")} ${result} <br> ${t(
+        "result_depression_description"
+      )}`;
     },
   },
 ];

@@ -1,12 +1,14 @@
-export function getSentiment(text: string, keywords: object) {
+export function getSentiment(text: string, keywords: object, language: string) {
   const Sentiment = require("sentiment");
   const sentiment = new Sentiment();
-  const idLanguage = {
-    labels: keywords,
-  };
-  sentiment.registerLanguage("id", idLanguage);
+  if (language === "id") {
+    const idLanguage = {
+      labels: keywords,
+    };
+    sentiment.registerLanguage("id", idLanguage);
+  }
 
-  const result = sentiment.analyze(text, { language: "id" });
+  const result = sentiment.analyze(text, { language: language });
 
   return result;
 }
