@@ -405,7 +405,7 @@ export default function VoiceChat() {
       )}
 
       {/* Button to open language modal */}
-      <div className="fixed bottom-6 right-6 z-40">
+      {/* <div className="fixed top-6 right-6 z-40">
         <Button
           variant="outline"
           className="bg-white border-blue-500 text-blue-700 hover:bg-blue-50"
@@ -414,7 +414,7 @@ export default function VoiceChat() {
           <MessageCircle className="mr-2" />
           {t("Ganti Bahasa")}
         </Button>
-      </div>
+      </div> */}
 
       {/* Help Modal */}
       {showHelpModal && (
