@@ -11,7 +11,6 @@ import {
   MessageCircle,
   HelpCircle,
   X,
-  Flag,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createScript } from "./data/Script";

@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MoodMind
 
-## Getting Started
+**MoodMind** is a lightweight web application designed to perform early screening of depression symptoms in tuberculosis (TB) patients, especially in low-resource settings. It utilizes automatic speech recognition and sentiment analysis tailored to the Indonesian language, enabling patients to receive emotional assessments and actionable recommendations based on voice input.
 
-First, run the development server:
+## 🧠 Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Voice-based input using Web Speech API
+- Custom sentiment analysis with Indonesian lexicon
+- Support for English and Bahasa Indonesia
+- Depression detection based on emotional language cues
+- Designed specifically with TB patients in mind
+- Lightweight and easily deployable using Next.js
+
+## 📦 Technologies Used
+
+- **Frontend Framework:** Next.js (React-based)
+- **Styling:** Tailwind CSS
+- **Speech Recognition:** Web Speech API
+- **Languages:** TypeScript & JavaScript
+- **Sentiment Analysis Library:** [`sentiment`](https://www.npmjs.com/package/sentiment)
+
+## 📂 Project Structure
+
+```
+/
+├── app/            # Routing and page rendering
+├── components/     # Reusable UI components
+├── lib/            # Utility functions and configurations (e.g., i18n)
+├── public/         # Static assets
+├── styles/         # Global styles
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🧪 Depression Detection Logic
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Users speak responses to a set of system-generated prompts.
+2. Responses are transcribed to text via SpeechRecognition API.
+3. The transcribed text is analyzed using sentiment analysis.
+4. The system calculates a score and suggests next steps if depression is detected.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Sample Output
 
-## Learn More
+Example input:
+> Saya merasa kosong dan hampa
 
-To learn more about Next.js, take a look at the following resources:
+Sentiment result:
+```json
+{
+  "score": -5,
+  "comparative": -1.25,
+  "words": ["merasa", "kosong", "hampa"],
+  "positive": [],
+  "negative": ["merasa", "kosong", "hampa"]
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧪 How to Run Locally
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Clone the repository.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+## 🔧 Configuration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Configure multilingual support via `i18n`
+- Customize the Indonesian sentiment lexicon under `lib/keywords.ts`
+- Modify prompts in `lib/script.ts`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 💡 Future Plans
+
+- Integration with clinical information systems
+- Machine learning enhancements for better accuracy
+- Offline support and PWA capabilities
+
+## 📜 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📚 References
+
+1. World Health Organization (2023). *Depression and Other Common Mental Disorders: Global Health Estimates*.
+2. Prina et al. (2011). *Depression and TB: A Deadly Combination*. The Lancet.
+3. Mozilla Developer Network. *Web Speech API Documentation*.
