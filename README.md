@@ -80,11 +80,3 @@ Sentiment result:
 ## 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## 📚 References
-
-1. World Health Organization (2023). *Depression and Other Common Mental Disorders: Global Health Estimates*.
-2. Prina et al. (2011). *Depression and TB: A Deadly Combination*. The Lancet.
-3. Mozilla Developer Network. *Web Speech API Documentation*.
