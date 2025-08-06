@@ -2,7 +2,7 @@
 
 **MoodMind** is a lightweight web application designed to perform early screening of depression symptoms in tuberculosis (TB) patients, especially in low-resource settings. It utilizes automatic speech recognition and sentiment analysis tailored to the Indonesian language, enabling patients to receive emotional assessments and actionable recommendations based on voice input.
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 /
@@ -29,7 +29,7 @@ Sentiment result:
 }
 ```
 
-## 🧪 How to Run Locally
+## How to Run Locally
 
 1. Clone the repository.
 2. Install dependencies:
@@ -41,12 +41,12 @@ Sentiment result:
    npm run dev
    ```
 
-## 🔧 Configuration
+## Configuration
 
 - Configure multilingual support via `i18n`
 - Customize the Indonesian sentiment lexicon under `lib/keywords.ts`
 - Modify prompts in `lib/script.ts`
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
